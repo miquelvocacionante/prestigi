@@ -1,597 +1,200 @@
 <!DOCTYPE html>
 <html lang="ca">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="theme-color" content="#8B5A3C">
-    <link rel="icon" type="image/png" href="https://i.imgur.com/YourLogo.png">
-    <title>Preparant la teva reserva - Prestigi</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #F5E6D8 0%, #E8D5C4 50%, #D4A574 100%);
-            min-height: 100vh;
-            min-height: calc(var(--vh, 1vh) * 100);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #3A2317;
-            overflow: hidden;
-            padding: 15px;
-            margin: 0;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        .container {
-            width: 100%;
-            max-width: 600px;
-            text-align: center;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        h1 {
-            font-size: clamp(1.75rem, 6vw, 2.25rem);
-            font-weight: 700;
-            color: #8B5A3C;
-            margin-bottom: 25px;
-            opacity: 0;
-            animation: fadeInUp 0.8s ease forwards;
-            line-height: 1.2;
-            padding: 0 10px;
-        }
-        .progress-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 100px;
-            padding: 6px;
-            box-shadow: 0 4px 20px rgba(139, 90, 60, 0.15);
-            margin-bottom: 25px;
-            opacity: 0;
-            animation: fadeInUp 0.8s ease 0.3s forwards;
-            width: 100%;
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .progress-bar {
-            height: clamp(24px, 5vw, 35px);
-            background: linear-gradient(90deg, #8B5A3C 0%, #A0785C 35%, #D4A574 100%);
-            border-radius: 100px;
-            width: 0%;
-            transition: width 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(139, 90, 60, 0.3);
-        }
-        .progress-bar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.6),
-                transparent
-            );
-            transform: translateX(-100%);
-            animation: shimmer 2s infinite;
-        }
-        @keyframes shimmer {
-            100% {
-                transform: translateX(100%);
-            }
-        }
-        .status-text {
-            font-size: clamp(1.125rem, 4vw, 1.375rem);
-            color: #3A2317;
-            margin-top: 20px;
-            min-height: 45px;
-            opacity: 0;
-            animation: fadeInUp 0.8s ease 0.6s forwards;
-            padding: 0 15px;
-            line-height: 1.4;
-            font-weight: 500;
-        }
-        .loading-dots {
-            display: inline-block;
-            margin-left: 5px;
-        }
-        .loading-dots span {
-            display: inline-block;
-            width: clamp(8px, 2vw, 10px);
-            height: clamp(8px, 2vw, 10px);
-            border-radius: 50%;
-            background: #8B5A3C;
-            margin: 0 3px;
-            opacity: 0;
-            animation: dotPulse 1.4s infinite ease-in-out;
-            vertical-align: middle;
-        }
-        .loading-dots span:nth-child(1) {
-            animation-delay: -0.32s;
-        }
-        .loading-dots span:nth-child(2) {
-            animation-delay: -0.16s;
-        }
-        @keyframes dotPulse {
-            0%, 80%, 100% {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            40% {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .pulse-circle {
-            position: fixed;
-            width: clamp(40px, 10vw, 60px);
-            height: clamp(40px, 10vw, 60px);
-            border-radius: 50%;
-            background: rgba(139, 90, 60, 0.15);
-            animation: pulse 2s ease-out infinite;
-            pointer-events: none;
-        }
-        .pulse-circle.gold {
-            background: rgba(212, 165, 116, 0.2);
-        }
-        .pulse-circle:nth-child(1) {
-            top: 10%;
-            left: 5%;
-            animation-delay: 0s;
-        }
-        .pulse-circle:nth-child(2) {
-            top: 60%;
-            right: 5%;
-            animation-delay: 0.5s;
-        }
-        .pulse-circle:nth-child(3) {
-            bottom: 10%;
-            left: 15%;
-            animation-delay: 1s;
-        }
-        .pulse-circle:nth-child(4) {
-            top: 30%;
-            right: 20%;
-            animation-delay: 1.5s;
-            width: clamp(30px, 8vw, 50px);
-            height: clamp(30px, 8vw, 50px);
-        }
-        .pulse-circle:nth-child(5) {
-            bottom: 30%;
-            right: 10%;
-            animation-delay: 2s;
-            width: clamp(50px, 12vw, 70px);
-            height: clamp(50px, 12vw, 70px);
-        }
-        @keyframes pulse {
-            0% {
-                transform: scale(0.8);
-                opacity: 0.5;
-            }
-            50% {
-                transform: scale(1.2);
-                opacity: 0.2;
-            }
-            100% {
-                transform: scale(0.8);
-                opacity: 0.5;
-            }
-        }
-        .icon-container {
-            margin-bottom: 30px;
-            opacity: 0;
-            animation: fadeInUp 0.8s ease 0.1s forwards;
-        }
-        .logo {
-            width: clamp(120px, 30vw, 160px);
-            height: clamp(120px, 30vw, 160px);
-            margin: 0 auto;
-            position: relative;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 20px rgba(139, 90, 60, 0.2);
-        }
-        .logo-icon {
-            font-size: clamp(50px, 15vw, 70px);
-            animation: gentleFloat 3s ease-in-out infinite;
-        }
-        @keyframes gentleFloat {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-        .service-info {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-            padding: 15px 20px;
-            margin-top: 20px;
-            opacity: 0;
-            animation: fadeInUp 0.8s ease 0.9s forwards;
-            box-shadow: 0 2px 10px rgba(139, 90, 60, 0.1);
-            display: none;
-        }
-        .service-info.show {
-            display: block;
-        }
-        .service-info p {
-            margin: 5px 0;
-            color: #3A2317;
-            font-size: clamp(0.9rem, 3vw, 1rem);
-        }
-        .service-info strong {
-            color: #8B5A3C;
-        }
-        .error-message {
-            background: rgba(255, 100, 100, 0.1);
-            border: 2px solid #ff6464;
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            display: none;
-            animation: fadeInUp 0.5s ease forwards;
-        }
-        .error-message h2 {
-            color: #ff6464;
-            margin-bottom: 15px;
-            font-size: clamp(1.2rem, 4vw, 1.5rem);
-        }
-        .error-message p {
-            color: #3A2317;
-            margin: 10px 0;
-            font-size: clamp(0.9rem, 3vw, 1rem);
-        }
-        .error-message a {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 12px 30px;
-            background: #8B5A3C;
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .error-message a:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(139, 90, 60, 0.3);
-        }
-        /* Media queries */
-        @media (max-width: 375px) {
-            .container {
-                padding: 10px;
-            }
-            h1 {
-                margin-bottom: 20px;
-                font-size: 1.5rem;
-            }
-            .status-text {
-                margin-top: 15px;
-                font-size: 1rem;
-            }
-            .icon-container {
-                margin-bottom: 20px;
-            }
-            .logo {
-                width: 100px;
-                height: 100px;
-            }
-            .logo-icon {
-                font-size: 45px;
-            }
-        }
-        @media (min-height: 800px) {
-            .icon-container {
-                margin-bottom: 40px;
-            }
-            h1 {
-                margin-bottom: 35px;
-            }
-            .progress-container {
-                margin-bottom: 35px;
-            }
-        }
-        @media (min-width: 768px) {
-            .container {
-                padding: 40px;
-            }
-            .logo {
-                width: 140px;
-                height: 140px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animació de càrrega i redirecció</title>
+  <style>
+    :root {
+      --color-primary: #8B5A3C;
+      --color-secondary: #A0785C;
+      --bg-start: #F5E6D8;
+      --bg-middle: #E8D5C4;
+      --bg-end: #D4A574;
+    }
+    /* Asegurar que ocupa todo el viewport */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-middle) 50%, var(--bg-end) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3A2317;
+    }
+    .container {
+      width: 100%;
+      max-width: 400px;
+      height: 100%;              /* ocupa toda la altura */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      padding: 15px;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 6vw, 2.25rem);
+      color: var(--color-primary);
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease forwards;
+    }
+    .progress-wrapper {
+      background: rgba(255,255,255,0.9);
+      border-radius: 50px;
+      padding: 5px;
+      margin: 20px 0;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease 0.3s forwards;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 30px;
+      background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 50%, var(--bg-end) 100%);
+      width: 0;
+      transition: width 0.3s ease;
+      border-radius: 50px;
+      position: relative;
+      overflow: hidden;
+    }
+    .progress-bar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+      transform: translateX(-100%);
+      animation: shimmer 2s infinite;
+    }
+    @keyframes shimmer { to { transform: translateX(100%); } }
+    .status-text {
+      font-size: clamp(1.125rem, 4vw, 1.375rem);
+      margin-top: 15px;
+      min-height: 40px;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease 0.6s forwards;
+    }
+    .loading-dots span {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      margin: 0 3px;
+      background: var(--color-primary);
+      border-radius: 50%;
+      opacity: 0;
+      animation: dotPulse 1.4s infinite ease-in-out;
+    }
+    .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes dotPulse {
+      0%,80%,100% { opacity: 0; transform: scale(0.8); }
+      40% { opacity: 1; transform: scale(1); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .service-info, .error-message {
+      background: rgba(255,255,255,0.9);
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
+      display: none;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .service-info.show, .error-message.show { display: block; }
+    .error-message { border: 2px solid #ff6464; }
+    .error-message h2 { color: #ff6464; margin-bottom: 10px; }
+    .error-message a {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 20px;
+      background: var(--color-primary);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 20px;
+    }
+  </style>
 </head>
 <body>
-    <div class="pulse-circle"></div>
-    <div class="pulse-circle gold"></div>
-    <div class="pulse-circle"></div>
-    <div class="pulse-circle gold"></div>
-    <div class="pulse-circle"></div>
-    
-    <div class="container">
-        <div class="icon-container">
-            <div class="logo">
-                <div class="logo-icon">✂️</div>
-            </div>
-        </div>
-        
-        <h1>Preparant la teva reserva...</h1>
-        
-        <div class="progress-container">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
-        
-        <div class="status-text" id="statusText">
-            Verificant disponibilitat<span class="loading-dots"><span></span><span></span><span></span></span>
-        </div>
-        
-        <div class="service-info" id="serviceInfo">
-            <p><strong>Servei:</strong> <span id="serviceDesc"></span></p>
-            <p><strong>Durada estimada:</strong> <span id="serviceDuration"></span></p>
-            <p><strong>Client:</strong> <span id="clientName"></span></p>
-        </div>
-        
-        <div class="error-message" id="errorMessage">
-            <h2>⚠️ Servei no reconegut</h2>
-            <p>No hem pogut identificar el servei seleccionat.</p>
-            <p>Codi rebut: <strong id="errorCode"></strong></p>
-            <a href="https://cal.com/prestigi">Anar al calendari general</a>
-        </div>
+  <div class="container">
+    <h1>Preparant la teva reserva...</h1>
+    <div class="progress-wrapper">
+      <div class="progress-bar" id="progressBar"></div>
     </div>
-    
-    <script>
-        // Configuració - CANVIA AIXÒ AMB EL TEU USUARI DE CAL.COM
-        const CALCOM_USERNAME = 'prestigi'; // Canvia això pel teu usuari de Cal.com
-        
-        // Mapa de serveis a URLs i informació
-        const SERVICES_MAP = {
-            // HOMES
-            'HOME_TALL': {
-                url: 'tall-home',
-                description: 'Tall de cabells per a home',
-                duration: '30 minuts'
-            },
-            'HOME_BARBA': {
-                url: 'barba',
-                description: 'Tall i arreglat de barba',
-                duration: '15 minuts'
-            },
-            
-            // DONES - TALLAR
-            'DONA_SERRELL': {
-                url: 'dona-serrell',
-                description: 'Tallar només serrell',
-                duration: '15 minuts'
-            },
-            'DONA_TALL_CURT': {
-                url: 'dona-tall-curt',
-                description: 'Tall de cabells curt',
-                duration: '35 minuts'
-            },
-            'DONA_TALL_MITJA': {
-                url: 'dona-tall-mitja',
-                description: 'Tall de cabells mitjà',
-                duration: '45 minuts'
-            },
-            'DONA_TALL_LLARG': {
-                url: 'dona-tall-llarg',
-                description: 'Tall de cabells llarg',
-                duration: '60 minuts'
-            },
-            
-            // DONES - PENTINAR
-            'DONA_PENTINAR_CURT': {
-                url: 'dona-pentinar-curt',
-                description: 'Pentinar cabells curt',
-                duration: '20 minuts'
-            },
-            'DONA_PENTINAR_MITJA': {
-                url: 'dona-pentinar-mitja',
-                description: 'Pentinar cabells mitjà',
-                duration: '30 minuts'
-            },
-            'DONA_PENTINAR_LLARG': {
-                url: 'dona-pentinar-llarg',
-                description: 'Pentinar cabells llarg',
-                duration: '40 minuts'
-            },
-            
-            // JOVES
-            'JOVE_NOI': {
-                url: 'jove-noi',
-                description: 'Tall jove noi (15-25 anys)',
-                duration: '25 minuts'
-            },
-            'JOVE_NOIA': {
-                url: 'jove-noia',
-                description: 'Tall jove noia (15-25 anys)',
-                duration: '30 minuts'
-            }
-        };
-        
-        // Elements del DOM
-        const progressBar = document.getElementById('progressBar');
-        const statusText = document.getElementById('statusText');
-        const serviceInfo = document.getElementById('serviceInfo');
-        const serviceDesc = document.getElementById('serviceDesc');
-        const serviceDuration = document.getElementById('serviceDuration');
-        const clientName = document.getElementById('clientName');
-        const errorMessage = document.getElementById('errorMessage');
-        const errorCode = document.getElementById('errorCode');
-        
-        // Obtenir paràmetres de la URL
-        function getURLParameters() {
-            const params = new URLSearchParams(window.location.search);
-            return {
-                servei: params.get('servei') || params.get('servei_final') || '',
-                nom: params.get('nom') || '',
-                cognoms: params.get('cognoms') || '',
-                telefon: params.get('telefon') || '',
-                email: params.get('email') || '',
-                perfil: params.get('perfil') || params.get('perfil_seleccionat') || ''
-            };
-        }
-        
-        // Construir URL de Cal.com
-        function buildCalcomURL(serviceCode, params) {
-            const service = SERVICES_MAP[serviceCode];
-            if (!service) return null;
-            
-            const baseURL = `https://cal.com/${CALCOM_USERNAME}/${service.url}`;
-            const urlParams = new URLSearchParams();
-            
-            // Afegir paràmetres si existeixen
-            if (params.nom || params.cognoms) {
-                const fullName = `${params.nom} ${params.cognoms}`.trim();
-                urlParams.append('name', fullName);
-            }
-            
-            if (params.email) {
-                urlParams.append('email', params.email);
-            }
-            
-            if (params.telefon) {
-                urlParams.append('phone', params.telefon);
-            }
-            
-            // Afegir notes amb informació del servei
-            const notes = `Servei: ${service.description}\nCodi: ${serviceCode}`;
-            urlParams.append('notes', notes);
-            
-            return `${baseURL}?${urlParams.toString()}`;
-        }
-        
-        // Missatges de càrrega
-        const messages = [
-            'Verificant disponibilitat',
-            'Consultant l\'agenda',
-            'Preparant el calendari',
-            'Buscant els millors horaris',
-            'Configurant la teva reserva',
-            'Gairebé llest'
-        ];
-        
-        let messageIndex = 0;
-        let progress = 0;
-        
-        // Actualitzar missatge
-        function updateMessage() {
-            if (messageIndex < messages.length) {
-                statusText.innerHTML = messages[messageIndex] + '<span class="loading-dots"><span></span><span></span><span></span></span>';
-                messageIndex++;
-            }
-        }
-        
-        // Actualitzar barra de progrés
-        function updateProgress() {
-            progress += 1.25; // Per arribar a 100% en 8 segons (100/80 = 1.25)
-            progressBar.style.width = Math.min(progress, 100) + '%';
-            
-            if (progress >= 100) {
-                clearInterval(progressInterval);
-                setTimeout(() => {
-                    handleRedirect();
-                }, 500);
-            }
-        }
-        
-        // Gestionar la redirecció
-        function handleRedirect() {
-            const params = getURLParameters();
-            const serviceCode = params.servei;
-            
-            // Mostrar informació del servei
-            if (SERVICES_MAP[serviceCode]) {
-                const service = SERVICES_MAP[serviceCode];
-                serviceDesc.textContent = service.description;
-                serviceDuration.textContent = service.duration;
-                clientName.textContent = `${params.nom} ${params.cognoms}`.trim() || 'No especificat';
-                serviceInfo.classList.add('show');
-                
-                statusText.innerHTML = '<span style="color: #8B5A3C; font-weight: 600;">✨ Reserva preparada! Redirigint...</span>';
-                
-                // Construir URL i redirigir
-                const redirectURL = buildCalcomURL(serviceCode, params);
-                if (redirectURL) {
-                    setTimeout(() => {
-                        window.location.href = redirectURL;
-                    }, 1500);
-                }
-            } else {
-                // Mostrar error si no es troba el servei
-                clearInterval(messageInterval);
-                progressBar.style.width = '100%';
-                progressBar.style.background = '#ff6464';
-                statusText.style.display = 'none';
-                serviceInfo.style.display = 'none';
-                errorCode.textContent = serviceCode || 'CAP';
-                errorMessage.style.display = 'block';
-            }
-        }
-        
-        // Intervals
-        const messageInterval = setInterval(updateMessage, 1333); // 8 segons / 6 missatges
-        const progressInterval = setInterval(updateProgress, 100);
-        
-        // Iniciar després d'un petit delay
-        setTimeout(() => {
-            updateProgress();
-        }, 500);
-        
-        // Debug en consola
-        console.log('Paràmetres rebuts:', getURLParameters());
-        console.log('Servei detectat:', getURLParameters().servei);
-        if (SERVICES_MAP[getURLParameters().servei]) {
-            console.log('URL de redirecció:', buildCalcomURL(getURLParameters().servei, getURLParameters()));
-        }
-        
-        // Ajustar altura en mòbils
-        function setViewportHeight() {
-            const vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-        }
-        
-        setViewportHeight();
-        window.addEventListener('resize', setViewportHeight);
-        
-        // Prevenir zoom en mòbils
-        document.addEventListener('touchstart', function(event) {
-            if (event.touches.length > 1) {
-                event.preventDefault();
-            }
-        });
-    </script>
+    <div class="status-text" id="statusText">
+      Verificant disponibilitat<span class="loading-dots"><span></span><span></span><span></span></span>
+    </div>
+    <div class="service-info" id="serviceInfo">
+      <p><strong>Servei:</strong> <span id="serviceDesc"></span></p>
+      <p><strong>Durada:</strong> <span id="serviceDuration"></span></p>
+      <p><strong>Client:</strong> <span id="clientName"></span></p>
+    </div>
+    <div class="error-message" id="errorMessage">
+      <h2>⚠️ Servei no reconegut</h2>
+      <p>No s'ha pogut identificar el servei seleccionat.</p>
+      <p>Codi rebut: <strong id="errorCode"></strong></p>
+      <a href="https://cal.com/prestigi-solsona">Anar al calendari general</a>
+    </div>
+  </div>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const CALCOM_USERNAME = 'prestigi-solsona';
+    const rootStyles = getComputedStyle(document.documentElement);
+    const PRIMARY_COLOR = rootStyles.getPropertyValue('--color-primary').trim();
+    const SERVICES_MAP = {
+      'HOME_TALL':   { url:'tall-home', description:'Tall de cabells per a home', duration:'30 minuts' },
+      'HOME_BARBA':  { url:'barba',     description:'Tall i arreglat de barba',    duration:'15 minuts' },
+      'DONA_SERRELL':{ url:'dona-serrell',description:'Tallar només serrell',       duration:'15 minuts' },
+      'DONA_TALL_CURT':{url:'dona-tall-curt',description:'Tall de cabells curt',    duration:'35 minuts' },
+      'DONA_TALL_MITJA':{url:'dona-tall-mitja',description:'Tall de cabells mitjà',   duration:'45 minuts' },
+      'DONA_TALL_LLARG':{url:'dona-tall-llarg',description:'Tall de cabells llarg',   duration:'60 minuts' },
+      'DONA_PENTINAR_CURT': {url:'dona-pentinar-curt',description:'Pentinar cabells curt', duration:'20 minuts'},
+      'DONA_PENTINAR_MITJA':{url:'dona-pentinar-mitja',description:'Pentinar cabells mitjà',duration:'30 minuts'},
+      'DONA_PENTINAR_LLARG':{url:'dona-pentinar-llarg',description:'Pentinar cabells llarg',duration:'40 minuts'},
+      'JOVE_NOI':     { url:'jove-noi', description:'Tall jove noi (15-25 anys)', duration:'25 minuts' },
+      'JOVE_NOIA':    { url:'jove-noia',description:'Tall jove noia (15-25 anys)',duration:'30 minuts' }
+    };
+    const progressBar = document.getElementById('progressBar');
+    const statusText = document.getElementById('statusText');
+    const serviceInfo = document.getElementById('serviceInfo');
+    const serviceDesc = document.getElementById('serviceDesc');
+    const serviceDuration = document.getElementById('serviceDuration');
+    const clientName = document.getElementById('clientName');
+    const errorMessage = document.getElementById('errorMessage');
+    const errorCode = document.getElementById('errorCode');
+    function getURLParameters() {
+      const p = new URLSearchParams(window.location.search);
+      return {
+        servei: p.get('servei')||p.get('servei_final')||'', nom:p.get('nom')||'', cognoms:p.get('cognoms')||'', telefon:p.get('telefon')||'', email:p.get('email')||''
+      };
+    }
+    function buildCalcomURL(code, params) {
+      const svc = SERVICES_MAP[code]; if (!svc) return null;
+      const base = `https://cal.com/${CALCOM_USERNAME}/${svc.url}`;
+      const qp = new URLSearchParams();
+      const fullName = `${params.nom} ${params.cognoms}`.trim(); if(fullName) qp.append('name', fullName);
+      if(params.email) qp.append('email', params.email);
+      if(params.telefon) qp.append('phone', params.telefon);
+      qp.append('notes', `Servei: ${svc.description}\nCodi: ${code}`);
+      return `${base}?${qp}`;
+    }
+    const messages = ['Verificant disponibilitat','Consultant l\'agenda','Preparant el calendari','Buscant els millors horaris','Configurant la teva reserva','Gairebé llest'];
+    let idx=0, prog=0;
+    function updateMessage(){ if(idx<messages.length){ statusText.innerHTML = messages[idx++] + '<span class="loading-dots"><span></span><span></span><span></span></span>'; }}
+    function updateProgress(){ prog+=1.25; progressBar.style.width = Math.min(prog,100)+'%'; if(prog>=100){ clearInterval(msgInt); clearInterval(prgInt); setTimeout(handleRedirect,500);} }
+    function handleRedirect(){ const params=getURLParameters(), code=params.servei; if(SERVICES_MAP[code]){ const svc=SERVICES_MAP[code]; serviceDesc.textContent=svc.description; serviceDuration.textContent=svc.duration; clientName.textContent=`${params.nom} ${params.cognoms}`.trim()||'No especificat'; serviceInfo.classList.add('show'); statusText.innerHTML=`<strong style="color:${PRIMARY_COLOR}">✨ Reserva preparada! Redirigint...</strong>`; const redirectURL=buildCalcomURL(code,params); if(redirectURL) setTimeout(()=>window.location.href=redirectURL,1500);} else { errorCode.textContent=code||'CAP'; errorMessage.classList.add('show'); statusText.style.display='none'; progressBar.style.background='#ff6464'; }}
+    const msgInt = setInterval(updateMessage,1333);
+    const prgInt = setInterval(updateProgress,100);
+    setTimeout(updateProgress,500);
+  });
+  </script>
 </body>
 </html>
